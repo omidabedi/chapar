@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Chat Box</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div id="app" class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card w-100" style="max-width: 400px;">
+            <div class="card-header text-white bg-primary text-center">
+                Chat Room
+            </div>
+            <div class="card-body overflow-auto" style="height: 300px;" id="chat-messages">
+                <div v-for="msg in messages" class="mb-2">
+                    <div 
+                        :class="['p-2 rounded-3', msg.self ? 'bg-success text-white ms-auto' : 'bg-light text-dark me-auto']" 
+                        style="max-width: 70%;"
+                    >
+                        {{ msg.text }}
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="message" 
+                        @keyup.enter="sendMessage" 
+                        placeholder="Type a message..."
+                    />
+                    <button class="btn btn-primary" @click="sendMessage">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    socket: null,
+                    message: '',
+                    messages: []
+                };
+            },
+            mounted() {
+                // Connect to the Socket.IO server
+                this.socket = io('http://localhost:8443');
+
+                // Listen for incoming messages
+                this.socket.on('rsv-msg', (data) => {
+                    this.messages.push({ text: data, self: false });
+                    this.scrollToBottom();
+                });
+            },
+            methods: {
+                sendMessage() {
+                    if (this.message.trim()) {
+                        // Emit the message to the server
+                        this.socket.emit('msg', this.message);
+                        // Add the message to the local chat
+                        this.messages.push({ text: this.message, self: true });
+                        // Clear the input field
+                        this.message = '';
+                        this.scrollToBottom();
+                    }
+                },
+                scrollToBottom() {
+                    const chatMessages = document.getElementById('chat-messages');
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

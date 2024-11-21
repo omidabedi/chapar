@@ -1,0 +1,16 @@
+{
+  "name": "chapar-server",
+  "version": "1.0.0",
+  "description": "NodeJS Socket Server for Chapar",
+  "main": "main.js",
+  "scripts": {
+    "dev": "nodemon main.js",
+    "serve": "serve main.js",
+  },
+  "type": "module",
+  "author": "Omid Abedi <oabedi2011@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  }
+}
