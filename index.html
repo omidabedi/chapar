@@ -52,7 +52,7 @@
             },
             mounted() {
                 // Connect to the Socket.IO server
-                this.socket = io('http://localhost:8443');
+                this.socket = io('https://perceptive-liberation-production.up.railway.app:8443');
 
                 // Listen for incoming messages
                 this.socket.on('rsv-msg', (data) => {
